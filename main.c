@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include "globals.h"
+#include "maze.h"
 
 TTF_Font *FONT;
 
@@ -78,7 +79,8 @@ int main()
     }
   }
 
-  // setupNumbers(renderer);
+  // generate maze
+  struct Maze *maze = newMaze(20, 20);
 
   // game loop
   SDL_Event e;
