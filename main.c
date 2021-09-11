@@ -80,7 +80,17 @@ int main()
   }
 
   // generate maze
-  struct Maze *maze = newMaze(20, 20);
+  Maze *m;
+  m = newMaze(10, 10);
+
+  // for (size_t i = 0; i < m->height; i++)
+  // {
+  //   for (size_t j = 0; j < m->width; j++)
+  //   {
+  //     unsigned index = getIndex(m, j, i);
+  //     printf(" x: %u, y: %u \n", m->cells[index].x, m->cells[index].y);
+  //   }
+  // }
 
   // game loop
   SDL_Event e;
@@ -106,6 +116,8 @@ int main()
     // clear renderer
     SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderClear(renderer);
+
+    drawMaze(m, renderer);
 
     SDL_RenderPresent(renderer);
 
