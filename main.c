@@ -122,7 +122,7 @@ int main()
     SDL_RenderPresent(renderer);
 
     unsigned delay = startTick - tickPerFrame;
-    if (delay > 0)
+    if (delay > 0 && !quit)
       SDL_Delay(delay);
   }
 

@@ -72,8 +72,9 @@ void generateMaze(Maze *m, enum Algorithms algo)
 void drawMaze(Maze *m, SDL_Renderer *renderer)
 {
 
-  const unsigned CELL_WIDTH = SCREEN_SIZE / m->width;
-  const unsigned CELL_HEIGHT = SCREEN_SIZE / m->height;
+  // calculate cell and wall dimensions
+  const unsigned CELL_WIDTH = SCREEN_SIZE / (m->width * 2 + 1);
+  const unsigned CELL_HEIGHT = SCREEN_SIZE / (m->height * 2 + 1);
 
   // SDL_Rect *top;
   // top.h
@@ -102,9 +103,75 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
       SDL_Rect *cellRect = malloc(sizeof(SDL_Rect));
       cellRect->h = CELL_HEIGHT;
       cellRect->w = CELL_WIDTH;
-      cellRect->x = c * CELL_WIDTH;
-      cellRect->y = r * CELL_HEIGHT;
+      cellRect->x = c * (CELL_WIDTH * 2) + CELL_WIDTH;
+      cellRect->y = r * (CELL_HEIGHT * 2) + CELL_HEIGHT;
       SDL_RenderFillRect(renderer, cellRect);
+
+      // draw walls
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+      for (size_t i = 0; i < 8; i++)
+      {
+        bool wall = false;
+        unsigned x = cellRect->x;
+        unsigned y = cellRect->y;
+
+        switch (i)
+        {
+        case 0:
+          wall = cell.t;
+          y -= CELL_HEIGHT;
+          break;
+        case 1:
+          wall = cell.r;
+          x += CELL_WIDTH;
+          break;
+        case 2:
+          wall = cell.b;
+          y += CELL_HEIGHT;
+          break;
+        case 3:
+          wall = cell.l;
+          x -= CELL_WIDTH;
+          break;
+
+        // diagonal walls
+        case 4:
+          wall = true;
+          y -= CELL_HEIGHT;
+          x -= CELL_WIDTH;
+          break;
+        case 5:
+          wall = true;
+          y -= CELL_HEIGHT;
+          x += CELL_WIDTH;
+          break;
+        case 6:
+          wall = true;
+          y += CELL_HEIGHT;
+          x -= CELL_WIDTH;
+          break;
+        case 7:
+          wall = true;
+          y += CELL_HEIGHT;
+          x += CELL_WIDTH;
+          break;
+        default:
+          break;
+        }
+
+        if (wall)
+        {
+          // draw wall
+          SDL_Rect *wallRect = malloc(sizeof(SDL_Rect));
+          wallRect->h = CELL_HEIGHT;
+          wallRect->w = CELL_WIDTH;
+          wallRect->x = x;
+          wallRect->y = y;
+          SDL_RenderFillRect(renderer, wallRect);
+          free(wallRect);
+        }
+      }
+
       free(cellRect);
     }
   }
