@@ -1,6 +1,6 @@
 #ifndef GLOBALSH
 #define GLOBALSH
 
-#define SCREEN_SIZE 800
+#define SCREEN_SIZE 1000
 
 #endif

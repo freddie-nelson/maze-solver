@@ -50,12 +50,9 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
 {
 
   // calculate cell and wall dimensions
-  const unsigned CELL_WIDTH = SCREEN_SIZE / (m->width * 2 + 1);
-  const unsigned CELL_HEIGHT = SCREEN_SIZE / (m->height * 2 + 1);
-
-  // SDL_Rect *top;
-  // top.h
-  // SDL_RenderDrawRect(renderer, );
+  const float CELL_WIDTH = (float)SCREEN_SIZE / (m->width * 2 + 1);
+  const float CELL_HEIGHT = (float)SCREEN_SIZE / (m->height * 2 + 1);
+  // printf(" w: %f ", CELL_WIDTH);
 
   for (size_t r = 0; r < m->height; r++)
   {
@@ -77,20 +74,20 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
       // printf(" x: %u, y: %u \n", cell.x, cell.y);
 
       // draw cell
-      SDL_Rect *cellRect = malloc(sizeof(SDL_Rect));
+      SDL_FRect *cellRect = malloc(sizeof(SDL_FRect));
       cellRect->h = CELL_HEIGHT;
       cellRect->w = CELL_WIDTH;
       cellRect->x = c * (CELL_WIDTH * 2) + CELL_WIDTH;
       cellRect->y = r * (CELL_HEIGHT * 2) + CELL_HEIGHT;
-      SDL_RenderFillRect(renderer, cellRect);
+      SDL_RenderFillRectF(renderer, cellRect);
 
       // draw walls
       SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
       for (size_t i = 0; i < 8; i++)
       {
         bool wall = false;
-        unsigned x = cellRect->x;
-        unsigned y = cellRect->y;
+        float x = cellRect->x;
+        float y = cellRect->y;
 
         switch (i)
         {
@@ -139,12 +136,12 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
         if (wall)
         {
           // draw wall
-          SDL_Rect *wallRect = malloc(sizeof(SDL_Rect));
+          SDL_FRect *wallRect = malloc(sizeof(SDL_FRect));
           wallRect->h = CELL_HEIGHT;
           wallRect->w = CELL_WIDTH;
           wallRect->x = x;
           wallRect->y = y;
-          SDL_RenderFillRect(renderer, wallRect);
+          SDL_RenderFillRectF(renderer, wallRect);
           free(wallRect);
         }
       }

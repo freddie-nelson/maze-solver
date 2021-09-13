@@ -85,7 +85,7 @@ int main()
 
   // generate maze
   Maze *m;
-  m = newMaze(10, 10);
+  m = newMaze(200, 200);
 
   // for (size_t i = 0; i < m->height; i++)
   // {
