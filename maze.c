@@ -2,31 +2,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "globals.h"
-#include "algorithms.h"
+#include "maze_helpers.h"
 #include "generators.h"
-
-typedef struct Cell
-{
-  bool visited;
-  bool l;
-  bool r;
-  bool t;
-  bool b;
-  unsigned x;
-  unsigned y;
-} Cell;
-
-typedef struct Maze
-{
-  Cell *cells;
-  unsigned width;
-  unsigned height;
-} Maze;
-
-unsigned getIndex(Maze *m, unsigned x, unsigned y)
-{
-  return (y * m->height) + x;
-}
 
 Maze *newMaze(unsigned w, unsigned h)
 {
@@ -40,7 +17,7 @@ Maze *newMaze(unsigned w, unsigned h)
   {
     for (size_t j = 0; j < w; j++)
     {
-      unsigned index = getIndex(m, j, i);
+      unsigned index = MAZE_INDEX(m, j, i);
       m->cells[index].x = j;
       m->cells[index].y = i;
       m->cells[index].visited = false;
@@ -61,7 +38,7 @@ void generateMaze(Maze *m, enum Algorithms algo)
   switch (algo)
   {
   case DEPTH_FIRST:
-    generateDepthFirst(m);
+    generateDepthFirst(m, &m->cells[MAZE_INDEX(m, 0, 0)]);
     break;
 
   default:
@@ -84,8 +61,8 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
   {
     for (size_t c = 0; c < m->width; c++)
     {
-      Cell cell = m->cells[getIndex(m, c, r)];
-      // printf(" %u ", getIndex(m, c, r));
+      Cell cell = m->cells[MAZE_INDEX(m, c, r)];
+      // printf(" %u ", MAZE_INDEX(m, c, r));
 
       // set draw color
       if (cell.visited)

@@ -4,25 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include "algorithms.h"
-
-typedef struct Cell
-{
-  bool visited;
-  bool l;
-  bool r;
-  bool t;
-  bool b;
-  unsigned x;
-  unsigned y;
-} Cell;
-
-typedef struct Maze
-{
-  Cell *cells;
-  unsigned width;
-  unsigned height;
-} Maze;
+#include "maze_helpers.h"
 
 unsigned getIndex(Maze *m, unsigned x, unsigned y);
 

@@ -1,8 +1,8 @@
 #ifndef GENERATORSH
 #define GENERATORSH
 
-#include "algorithms.h"
+#include "maze_helpers.h"
 
-void generateDepthFirst(struct Maze *m);
+void generateDepthFirst(struct Maze *m, Cell *entry);
 
 #endif

@@ -3,8 +3,8 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <sys/time.h>
 #include <stdlib.h>
+#include <time.h>
 #include "globals.h"
 #include "maze.h"
 
@@ -40,6 +40,10 @@ TTF_Font *FONT;
 
 int main()
 {
+  // seed rand
+  srand(time(NULL));
+
+  // setup SDL
   SDL_Window *window = NULL;
   SDL_Renderer *renderer = NULL;
   SDL_Surface *screenSurface = NULL;
@@ -87,10 +91,12 @@ int main()
   // {
   //   for (size_t j = 0; j < m->width; j++)
   //   {
-  //     unsigned index = getIndex(m, j, i);
+  //     unsigned index = MAZE_INDEX(m, j, i);
   //     printf(" x: %u, y: %u \n", m->cells[index].x, m->cells[index].y);
   //   }
   // }
+
+  generateMaze(m, DEPTH_FIRST);
 
   // game loop
   SDL_Event e;
