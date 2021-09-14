@@ -62,27 +62,22 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
       // printf(" %u ", MAZE_INDEX(m, c, r));
 
       // set draw color
-      if (cell.visited)
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+      // draw non visited cells
+      SDL_FRect *cellRect = malloc(sizeof(SDL_FRect));
+      cellRect->x = c * (CELL_WIDTH * 2) + CELL_WIDTH;
+      cellRect->y = r * (CELL_HEIGHT * 2) + CELL_HEIGHT;
+      if (!cell.visited)
       {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-      }
-      else
-      {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        cellRect->h = CELL_HEIGHT;
+        cellRect->w = CELL_WIDTH;
+        SDL_RenderFillRectF(renderer, cellRect);
       }
 
       // printf(" x: %u, y: %u \n", cell.x, cell.y);
 
-      // draw cell
-      SDL_FRect *cellRect = malloc(sizeof(SDL_FRect));
-      cellRect->h = CELL_HEIGHT;
-      cellRect->w = CELL_WIDTH;
-      cellRect->x = c * (CELL_WIDTH * 2) + CELL_WIDTH;
-      cellRect->y = r * (CELL_HEIGHT * 2) + CELL_HEIGHT;
-      SDL_RenderFillRectF(renderer, cellRect);
-
       // draw walls
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
       for (size_t i = 0; i < 8; i++)
       {
         bool wall = false;

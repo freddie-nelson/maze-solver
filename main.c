@@ -85,7 +85,7 @@ int main()
 
   // generate maze
   Maze *m;
-  m = newMaze(200, 200);
+  m = newMaze(50, 50);
 
   // for (size_t i = 0; i < m->height; i++)
   // {
@@ -127,9 +127,9 @@ int main()
 
     SDL_RenderPresent(renderer);
 
-    unsigned delay = startTick - tickPerFrame;
-    if (delay > 0 && !quit)
-      SDL_Delay(delay);
+    unsigned frameTime = startTick - SDL_GetTicks();
+    if (frameTime < tickPerFrame && !quit)
+      SDL_Delay(tickPerFrame - frameTime);
   }
 
   SDL_DestroyWindow(window);
