@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = main.c maze.c generators.c stack.c
+OBJS = main.c maze.c generators.c stack.c path.c
 
 #CC specifies which compiler we're using
 CC = clang

@@ -3,44 +3,6 @@
 #include "maze_helpers.h"
 #include "stack.h"
 
-// get neighbours of a cell for depth first generator
-// neighbours order is [top, right, bottom, left]
-// @returns the number of Cells in neighbours (max 4)
-unsigned dfNeighbours(Maze *m, Cell *c, Cell **neighbours)
-{
-  unsigned size = 0;
-
-  // top
-  if (c->y - 1 >= 0)
-  {
-    neighbours[size] = &m->cells[MAZE_INDEX(m, c->x, c->y - 1)];
-    size++;
-  }
-
-  // right
-  if (c->x + 1 < m->width)
-  {
-    neighbours[size] = &m->cells[MAZE_INDEX(m, c->x + 1, c->y)];
-    size++;
-  }
-
-  // bottom
-  if (c->y + 1 < m->height)
-  {
-    neighbours[size] = &m->cells[MAZE_INDEX(m, c->x, c->y + 1)];
-    size++;
-  }
-
-  // left
-  if (c->x - 1 >= 0)
-  {
-    neighbours[size] = &m->cells[MAZE_INDEX(m, c->x - 1, c->y)];
-    size++;
-  }
-
-  return size;
-}
-
 void generateDepthFirst(Maze *m, Cell *entry)
 {
   struct Stack *stack = createStack(m->width * m->height);
@@ -52,7 +14,7 @@ void generateDepthFirst(Maze *m, Cell *entry)
   {
     Cell *c = pop(stack);
     Cell **neighbours = malloc(4 * sizeof(Cell));
-    unsigned numOfNeighbours = dfNeighbours(m, c, neighbours);
+    unsigned numOfNeighbours = getNeighbours(m, c, neighbours);
 
     // printf("\n numOfN: %u, cellX: %u, cellY: %u, index: %u | ", numOfNeighbours, c->x, c->y, MAZE_INDEX(m, c->x, c->y));
 

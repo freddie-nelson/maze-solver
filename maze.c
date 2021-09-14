@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "maze_helpers.h"
 #include "generators.h"
+#include "path.h"
 
 Maze *newMaze(unsigned w, unsigned h)
 {
@@ -20,7 +21,11 @@ Maze *newMaze(unsigned w, unsigned h)
       unsigned index = MAZE_INDEX(m, j, i);
       m->cells[index].x = j;
       m->cells[index].y = i;
+
       m->cells[index].visited = false;
+      m->cells[index].explored = false;
+      m->cells[index].path = false;
+
       m->cells[index].b = true;
       m->cells[index].t = true;
       m->cells[index].r = true;
@@ -46,6 +51,87 @@ void generateMaze(Maze *m, enum Algorithms algo)
   }
 }
 
+void solveMaze(Maze *m, Cell *entry, Cell *exit)
+{
+  Path *path = createPath(m->width * m->height);
+
+  Step *start = malloc(sizeof(Step));
+  start->c = entry;
+  start->prev = NULL;
+
+  addPath(path, start);
+
+  // set all cells in maze to not explored
+  for (size_t i = 0; i < m->height; i++)
+  {
+    for (size_t j = 0; j < m->width; j++)
+    {
+      m->cells[MAZE_INDEX(m, j, i)].explored = false;
+    }
+  }
+
+  Step *dst;
+  while (!isPathEmpty(path))
+  {
+    Step *curr = removeStep(path);
+
+    if (curr->c == exit)
+    {
+      dst = curr;
+      break;
+    }
+    else if (curr->c->explored)
+    {
+      continue;
+    }
+
+    // add neighbours to path
+    if (!curr->c->t)
+    {
+      Step *top = malloc(sizeof(Step));
+      top->prev = curr;
+      top->c = &m->cells[MAZE_INDEX(m, curr->c->x, curr->c->y - 1)];
+      addPath(path, top);
+    }
+
+    if (!curr->c->r)
+    {
+      Step *right = malloc(sizeof(Step));
+      right->prev = curr;
+      right->c = &m->cells[MAZE_INDEX(m, curr->c->x + 1, curr->c->y)];
+      addPath(path, right);
+    }
+
+    if (!curr->c->b)
+    {
+      Step *bottom = malloc(sizeof(Step));
+      bottom->prev = curr;
+      bottom->c = &m->cells[MAZE_INDEX(m, curr->c->x, curr->c->y + 1)];
+      addPath(path, bottom);
+    }
+
+    if (!curr->c->l)
+    {
+      Step *left = malloc(sizeof(Step));
+      left->prev = curr;
+      left->c = &m->cells[MAZE_INDEX(m, curr->c->x - 1, curr->c->y)];
+      addPath(path, left);
+    }
+
+    curr->c->explored = true;
+  }
+
+  // backtrack/trace path
+  Step *curr = dst;
+  while (curr != NULL)
+  {
+    // mark cell as part of solution
+    curr->c->path = true;
+
+    curr = curr->prev;
+  }
+}
+
 void drawMaze(Maze *m, SDL_Renderer *renderer)
 {
 
@@ -62,22 +148,30 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
       // printf(" %u ", MAZE_INDEX(m, c, r));
 
       // set draw color
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-      // draw non visited cells
+      // draw special cells
       SDL_FRect *cellRect = malloc(sizeof(SDL_FRect));
+      cellRect->h = CELL_HEIGHT;
+      cellRect->w = CELL_WIDTH;
       cellRect->x = c * (CELL_WIDTH * 2) + CELL_WIDTH;
       cellRect->y = r * (CELL_HEIGHT * 2) + CELL_HEIGHT;
+
       if (!cell.visited)
       {
-        cellRect->h = CELL_HEIGHT;
-        cellRect->w = CELL_WIDTH;
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        SDL_RenderFillRectF(renderer, cellRect);
+      }
+      else if (cell.path)
+      {
+
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderFillRectF(renderer, cellRect);
       }
 
       // printf(" x: %u, y: %u \n", cell.x, cell.y);
 
       // draw walls
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
       for (size_t i = 0; i < 8; i++)
       {
         bool wall = false;

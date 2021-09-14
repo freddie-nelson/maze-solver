@@ -10,6 +10,7 @@ unsigned getIndex(Maze *m, unsigned x, unsigned y);
 
 struct Maze *newMaze(unsigned w, unsigned h);
 void generateMaze(Maze *m, enum Algorithms algo);
+void solveMaze(Maze *m, Cell *entry, Cell *exit);
 void drawMaze(Maze *m, SDL_Renderer *renderer);
 
 #endif

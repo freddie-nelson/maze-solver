@@ -97,6 +97,7 @@ int main()
   // }
 
   generateMaze(m, DEPTH_FIRST);
+  solveMaze(m, &m->cells[MAZE_INDEX(m, 0, 0)], &m->cells[MAZE_INDEX(m, 49, 49)]);
 
   // game loop
   SDL_Event e;
@@ -127,7 +128,8 @@ int main()
 
     SDL_RenderPresent(renderer);
 
-    unsigned frameTime = startTick - SDL_GetTicks();
+    unsigned frameTime = SDL_GetTicks() - startTick;
+    printf("\r FRAME_TIME: %u ", frameTime);
     if (frameTime < tickPerFrame && !quit)
       SDL_Delay(tickPerFrame - frameTime);
   }
