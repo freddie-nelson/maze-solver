@@ -84,8 +84,9 @@ int main()
   }
 
   // generate maze
+  const unsigned SIZE = 150;
   Maze *m;
-  m = newMaze(50, 50);
+  m = newMaze(SIZE, SIZE);
 
   // for (size_t i = 0; i < m->height; i++)
   // {
@@ -97,7 +98,7 @@ int main()
   // }
 
   generateMaze(m, DEPTH_FIRST);
-  solveMaze(m, &m->cells[MAZE_INDEX(m, 0, 0)], &m->cells[MAZE_INDEX(m, 49, 49)]);
+  solveMaze(m, &m->cells[MAZE_INDEX(m, 0, 0)], &m->cells[MAZE_INDEX(m, SIZE - 1, SIZE - 1)]);
 
   // game loop
   SDL_Event e;

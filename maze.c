@@ -171,7 +171,6 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
       // printf(" x: %u, y: %u \n", cell.x, cell.y);
 
       // draw walls
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
       for (size_t i = 0; i < 8; i++)
       {
         bool wall = false;
@@ -222,17 +221,50 @@ void drawMaze(Maze *m, SDL_Renderer *renderer)
           break;
         }
 
+        SDL_FRect *wallRect = malloc(sizeof(SDL_FRect));
+        wallRect->h = CELL_HEIGHT;
+        wallRect->w = CELL_WIDTH;
+        wallRect->x = x;
+        wallRect->y = y;
+
         if (wall)
         {
           // draw wall
-          SDL_FRect *wallRect = malloc(sizeof(SDL_FRect));
-          wallRect->h = CELL_HEIGHT;
-          wallRect->w = CELL_WIDTH;
-          wallRect->x = x;
-          wallRect->y = y;
+          SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
           SDL_RenderFillRectF(renderer, wallRect);
-          free(wallRect);
         }
+        else // draw walls between two cells that are part of the maze solution
+        {
+          bool draw = false;
+
+          switch (i)
+          {
+          case 0:
+            if (r - 1 >= 0)
+              draw = m->cells[MAZE_INDEX(m, c, r - 1)].path && cell.path;
+            break;
+          case 1:
+            if (c + 1 < m->width)
+              draw = m->cells[MAZE_INDEX(m, c + 1, r)].path && cell.path;
+            break;
+          case 2:
+            if (r + 1 < m->height)
+              draw = m->cells[MAZE_INDEX(m, c, r + 1)].path && cell.path;
+            break;
+          case 3:
+            if (c - 1 >= 0)
+              draw = m->cells[MAZE_INDEX(m, c - 1, r)].path && cell.path;
+            break;
+          }
+
+          if (draw)
+          {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRectF(renderer, wallRect);
+          }
+        }
+
+        free(wallRect);
       }
 
       free(cellRect);
