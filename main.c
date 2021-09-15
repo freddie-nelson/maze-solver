@@ -43,10 +43,8 @@ int main()
   // seed rand
   srand(time(NULL));
 
-  // setup SDL
   SDL_Window *window = NULL;
   SDL_Renderer *renderer = NULL;
-  SDL_Surface *screenSurface = NULL;
 
   // init png loading
   IMG_Init(IMG_INIT_PNG);
@@ -60,31 +58,60 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  bool quit = true;
-
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
   {
     printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-  }
-  else
-  {
-    // create window
-    window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE, SCREEN_SIZE, SDL_WINDOW_SHOWN);
-    if (window == NULL)
-    {
-      printf("Window could not be created! SDL_ERROR: %s\n", SDL_GetError());
-    }
-    else
-    {
-      // get window surface
-      screenSurface = SDL_GetWindowSurface(window);
-      renderer = SDL_GetRenderer(window);
-      quit = false;
-    }
+    exit(EXIT_FAILURE);
   }
 
+  // Create a window usable with OpenGL context
+  window = SDL_CreateWindow("Title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE, SCREEN_SIZE, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+  // Select render driver
+  // - A render driver that supports HW acceleration is used when available
+  // - Otherwise a render driver supporting software fallback is selected
+  SDL_RendererInfo renderDriverInfo;
+  uint32_t rendererFlags = SDL_RENDERER_TARGETTEXTURE;
+  int32_t nbRenderDrivers = SDL_GetNumRenderDrivers(), index = 0;
+  if (nbRenderDrivers < 0)
+  {
+    exit(EXIT_FAILURE);
+  }
+
+  while (index < nbRenderDrivers)
+  {
+    if (SDL_GetRenderDriverInfo(index, &renderDriverInfo) == 0)
+    {
+      if (((renderDriverInfo.flags & rendererFlags) == rendererFlags) && ((renderDriverInfo.flags & SDL_RENDERER_ACCELERATED) == SDL_RENDERER_ACCELERATED))
+      {
+        // Using render driver with HW acceleration
+        rendererFlags |= SDL_RENDERER_ACCELERATED;
+        SDL_SetHint(SDL_HINT_RENDER_DRIVER, renderDriverInfo.name);
+        break;
+      }
+    }
+    ++index;
+  }
+
+  if (index == nbRenderDrivers)
+  {
+    // Let SDL use the first render driver supporting software fallback
+    rendererFlags |= SDL_RENDERER_SOFTWARE;
+    index = -1;
+  }
+
+  // Create renderer
+  renderer = SDL_CreateRenderer(window, index, rendererFlags);
+  if (renderer == NULL)
+  {
+    printf("renderer SDL_Error: %s\n", SDL_GetError());
+    exit(EXIT_FAILURE);
+  }
+
+  bool quit = false;
+
   // generate maze
-  const unsigned SIZE = 150;
+  const unsigned SIZE = 80;
   Maze *m;
   m = newMaze(SIZE, SIZE);
 
